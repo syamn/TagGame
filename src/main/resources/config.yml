@@ -6,6 +6,12 @@
 #   Basic Config   #
 #==================#
 
+#====================#
+#   Logging Config   #
+#====================#
+# DetailLogDirectory
+DetailDirectory: plugins/TagGame/detail/
+
 #==================#
 #   Debug Config   #
 #==================#

@@ -40,9 +40,13 @@ public class ConfigurationManager {
 	private static File pluginDir = new File("plugins", "TagGame");
 
 	// デフォルトの設定定数
+	private final String defaultDetailDirectory = "plugins/TagGame/detail/";
 
 	// 設定項目
 	/* Basic Configs */
+
+	/* Logging Config */
+	private String detailDirectory = defaultDetailDirectory;
 
 	/* Debug Config */
 	private boolean debug = false;
@@ -58,7 +62,6 @@ public class ConfigurationManager {
 
 	/**
 	 * 設定をファイルから読み込む
-	 * @param initialLoad 初回ロードかどうか
 	 */
 	public void loadConfig(final boolean initialLoad) throws Exception{
 		// ディレクトリ作成
@@ -80,14 +83,23 @@ public class ConfigurationManager {
 
 		/* Basic Configs */
 
+		/* Logging Config */
+		detailDirectory = plugin.getConfig().getString("DetailDirectory", defaultDetailDirectory);
+
 		/* Debug Configs */
 		debug = plugin.getConfig().getBoolean("Debug", false);
 
+		// create dirs
+		createDir(new File(detailDirectory));
 	}
 
 	// 設定 getter/setter ここから
 	/* Basic Configs */
 
+	/* Logging Config */
+	public String getDetailDirectory(){
+		return this.detailDirectory;
+	}
 	/* Debug Configs */
 	public boolean isDebug(){
 		return this.debug;
