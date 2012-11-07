@@ -1,0 +1,17 @@
+##  Plugin Information  ##
+name: TagGame
+version: version-number-unknown
+main: syam.taggame.TagGame
+description: CraftBukkit TagMatch gaming plugin!
+website: http://sakura-server.net/
+##  Original Author     ##
+author: syam
+commands:
+    taggame:
+      usage: /taggame - to see the help
+      aliases: [tag, tg]
+      description: To see the TagGame help.
+permissions:
+    taggame.reload:
+        default: op
+        description: Allow use reload command
