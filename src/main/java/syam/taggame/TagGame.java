@@ -86,8 +86,7 @@ public class TagGame extends JavaPlugin{
 		// コマンド登録
 		registerCommands();
 
-		// TODO 鬼ごっこプロファイルの読み書きを作るまではここで初期化
-		new Game(this);
+		new Game(this).loadProfile("default");
 
 		// メッセージ表示
 		PluginDescriptionFile pdfFile=this.getDescription();
@@ -120,6 +119,8 @@ public class TagGame extends JavaPlugin{
 					break;
 			}
 		}
+
+		GameManager.getGame().saveProfile();
 
 		getServer().getScheduler().cancelTasks(this);
 

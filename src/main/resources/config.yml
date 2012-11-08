@@ -5,6 +5,8 @@
 #==================#
 #   Basic Config   #
 #==================#
+# GameProfileDirectory
+GameProfileDirectory: plugins/TagGame/profile/
 
 #==================#
 #   Games Config   #

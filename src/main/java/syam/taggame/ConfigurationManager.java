@@ -40,10 +40,12 @@ public class ConfigurationManager {
 	private static File pluginDir = new File("plugins", "TagGame");
 
 	// デフォルトの設定定数
+	private final String defaultGameProfileDirectory = "plugins/TagGame/profile/";
 	private final String defaultDetailDirectory = "plugins/TagGame/detail/";
 
 	// 設定項目
 	/* Basic Configs */
+	private String profileDirectory = defaultGameProfileDirectory;
 
 	/* Games Configs */
 	private int startCountdownInSec = 10;
@@ -85,6 +87,7 @@ public class ConfigurationManager {
 		checkver(version);
 
 		/* Basic Configs */
+		profileDirectory = plugin.getConfig().getString("GameProfileDirectory", defaultGameProfileDirectory);
 
 		/* Games Configs */
 		startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
@@ -96,6 +99,7 @@ public class ConfigurationManager {
 		debug = plugin.getConfig().getBoolean("Debug", false);
 
 		// create dirs
+		createDir(new File(profileDirectory));
 		createDir(new File(detailDirectory));
 	}
 

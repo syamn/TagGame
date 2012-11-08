@@ -254,4 +254,33 @@ public class Actions {
 		int s = sec % 60;
 		return m + "分" + s + "秒";
 	}
+
+
+	public static String convertPlayerLocationToString(final Location loc){
+		if (loc == null) return null;
+		return loc.getWorld().getName()+","+loc.getX()+","+loc.getY()+","+loc.getZ()+","+loc.getYaw()+","+loc.getPitch();
+	}
+	public static Location convertStringToPlayerLocation(final String loc){
+		if (loc == null) return null;
+
+		String[] s = loc.split(",");
+		if (s.length != 6){
+			log.warning(logPrefix+ "Skipping incorrect location format (,)");
+			return null;
+		}
+		World world = Bukkit.getWorld(s[0]);
+		if (world == null){
+			log.warning(logPrefix+ "Skipping undefined world " + s[0]);
+			return null;
+		}
+
+		Location ret = null;
+		try{
+			ret = new Location(world, Double.valueOf(s[1]), Double.valueOf(s[2]), Double.valueOf(s[3]), Float.valueOf(s[4]), Float.valueOf(s[5]));
+		}catch (Exception ex){
+			ex.printStackTrace();
+			return null;
+		}
+		return ret;
+	}
 }

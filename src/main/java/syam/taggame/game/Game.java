@@ -4,6 +4,8 @@
  */
 package syam.taggame.game;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -18,6 +20,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -51,10 +55,13 @@ public class Game {
 	// plugin instance
 	private final TagGame plugin;
 
+	private String profileName = "default";
+
 	private String gameID; // 一意なゲームID ログ用
 	// private Stage stage;
 
-	private int remainSec = 60 * 10; // 残り時間
+	private int gametime = 60 * 10;
+	private int remainSec = gametime; // 残り時間
 	private int timerThreadID = -1; // タイマータスクID
 	private int starttimeInSec = 10;
 	private int starttimerThreadID = -1;
@@ -284,6 +291,7 @@ public class Game {
 		cancelTimerTask();
 
 		this.state = GameState.WAITING;
+		this.remainSec = this.gametime;
 	}
 
 	/* ***** 参加プレイヤー関係 ***** */
@@ -512,5 +520,55 @@ public class Game {
 			String filepath = plugin.getConfigs().getDetailDirectory() + gameID + ".log";
 			Actions.log(filepath, line);
 		}
+	}
+
+	// プロファイル
+	public String saveProfile(){
+		FileConfiguration confFile = new YamlConfiguration();
+		File file = new File(plugin.getConfigs().getDetailDirectory() + profileName + ".yml");
+
+		confFile.set("GameTime", gametime);
+		confFile.set("TaggerSpawn", Actions.convertPlayerLocationToString(getSpawn(GameTeam.TAGGER)));
+		confFile.set("RunnerSpawn", Actions.convertPlayerLocationToString(getSpawn(GameTeam.RUNNER)));
+
+		try {
+			confFile.save(file);
+		} catch (IOException ex) {
+			log.warning(logPrefix+ "Couldn't write game data!");
+			ex.printStackTrace();
+			return "&cゲームデータの保存に失敗しました！";
+		}
+		return "&aゲームデータの保存に成功しました！";
+	}
+	public String loadProfile(final String fileName){
+		FileConfiguration confFile = new YamlConfiguration();
+		File file = new File(plugin.getConfigs().getDetailDirectory() + fileName + ".yml");
+
+		if (file == null || !file.exists()){
+			return "&cその名前のファイルは存在しません！";
+		}
+
+		int gt;
+		Location ts, rs;
+
+		try{
+			confFile.load(file);
+
+			gt = confFile.getInt("GameTime", 60 * 10);
+			ts = Actions.convertStringToPlayerLocation(confFile.getString("TaggerSpawn", null));
+			rs = Actions.convertStringToPlayerLocation(confFile.getString("RunnerSpawn", null));
+		}catch (Exception ex){
+			log.warning(logPrefix+ "Couldn't load game data!");
+			ex.printStackTrace();
+			return "&cゲームデータの読み込みに失敗しました！";
+		}
+
+		this.gametime = gt;
+		setSpawn(GameTeam.TAGGER, ts);
+		setSpawn(GameTeam.RUNNER, rs);
+
+		this.profileName = fileName;
+
+		return "&aゲームデータの読込に成功しました！";
 	}
 }
