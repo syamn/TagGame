@@ -9,7 +9,7 @@ package syam.taggame.enums;
  * @author syam(syamn)
  */
 public enum GameTeam {
-	TAGGER ("鬼", 35, 5, "&4"),
+	TAGGER ("鬼", 35, 5, "&c"),
 	RUNNER ("プレイヤー", 35, 14, "&a"),
 	;
 

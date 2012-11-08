@@ -18,7 +18,7 @@ public class ReadyCommand extends BaseCommand {
 	public ReadyCommand(){
 		bePlayer = false;
 		name = "ready";
-		argLength = 1;
+		argLength = 0;
 		usage = "<- ready game";
 	}
 

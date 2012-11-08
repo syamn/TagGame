@@ -109,7 +109,7 @@ public class Game {
 		// アナウンス
 		Actions.broadcastMessage(msgPrefix+"&2鬼ごっこの参加受付が開始されました！");
 		//Actions.broadcastMessage(msgPrefix+"&2 参加料:&6 "+entryFeeMsg+ "&2   賞金:&6 "+awardMsg);
-		Actions.broadcastMessage(msgPrefix+"&2 '&6/tag join [tagger] コマンドで参加してください！");
+		Actions.broadcastMessage(msgPrefix+"&2 '&6/tag join [tagger]&2' コマンドで参加してください！");
 
 		// ロギング
 		SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd-HHmmss");
@@ -149,7 +149,7 @@ public class Game {
 
 		// アナウンス
 		Actions.broadcastMessage(msgPrefix+"&2鬼ごっこが始まりました！");
-		Actions.broadcastMessage(msgPrefix+"&f &a制限時間: &f"+Actions.getTimeString(remainSec)+"&f | &b鬼: &f"+taggers.size()+"&b人&f | &c参加者: &f"+runners.size()+"&c人");
+		Actions.broadcastMessage(msgPrefix+"&f &a制限時間: &f"+Actions.getTimeString(remainSec)+"&f | &b鬼: &f"+taggers.size()+"&b人&f | &cプレイヤー: &f"+runners.size()+"&c人");
 
 		// 開始
 		timer(); // タイマースタート
