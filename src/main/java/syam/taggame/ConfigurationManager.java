@@ -42,6 +42,7 @@ public class ConfigurationManager {
 	// デフォルトの設定定数
 	private final String defaultGameProfileDirectory = "plugins/TagGame/profile/";
 	private final String defaultDetailDirectory = "plugins/TagGame/detail/";
+	private final List<String> defaultDisableCommands = new ArrayList<String>() {{add("/spawn"); add("/home"); add("/setspawn");}};
 
 	// 設定項目
 	/* Basic Configs */
@@ -49,6 +50,7 @@ public class ConfigurationManager {
 
 	/* Games Configs */
 	private int startCountdownInSec = 10;
+	private List<String> disableCommands = defaultDisableCommands;
 
 	/* Logging Config */
 	private String detailDirectory = defaultDetailDirectory;
@@ -91,6 +93,11 @@ public class ConfigurationManager {
 
 		/* Games Configs */
 		startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
+		if (plugin.getConfig().get("DisableCommands") != null){
+			disableCommands = plugin.getConfig().getStringList("DisableCommands");
+		}else{
+			disableCommands = defaultDisableCommands;
+		}
 
 		/* Logging Config */
 		detailDirectory = plugin.getConfig().getString("DetailDirectory", defaultDetailDirectory);
@@ -109,6 +116,9 @@ public class ConfigurationManager {
 	/* Games Configs */
 	public int getStartCountdownInSec(){
 		return this.startCountdownInSec;
+	}
+	public List<String> getDisableCommands(){
+		return this.disableCommands;
 	}
 	/* Logging Config */
 	public String getDetailDirectory(){

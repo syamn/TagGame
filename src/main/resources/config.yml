@@ -13,6 +13,16 @@ GameProfileDirectory: plugins/TagGame/profile/
 #==================#
 # Countdown time(sec) when starting the game
 StartCountdownInSec: 10
+# Lists of disabled commands during the game
+DisableCommands:
+- /spawn
+- /home
+- /sethome
+- /warp
+- /tp
+- /pot
+- /flymode
+- /fm
 
 #====================#
 #   Logging Config   #

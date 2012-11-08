@@ -28,6 +28,8 @@ import syam.taggame.command.SetCommand;
 import syam.taggame.command.StartCommand;
 import syam.taggame.enums.GameResult;
 import syam.taggame.game.Game;
+import syam.taggame.listener.InventoryListener;
+import syam.taggame.listener.PlayerListener;
 import syam.taggame.manager.GameManager;
 import syam.taggame.util.Actions;
 import syam.taggame.util.Metrics;
@@ -43,7 +45,8 @@ public class TagGame extends JavaPlugin{
 	public final static String msgPrefix = "&6[TagGame] &f";
 
 	// ** Listener **
-	//ServerListener serverListener = new ServerListener(this);
+	PlayerListener playerListener = new PlayerListener(this);
+	InventoryListener inventoryListener = new InventoryListener(this);
 
 	// ** Commands **
 	private List<BaseCommand> commands = new ArrayList<BaseCommand>();
@@ -81,7 +84,8 @@ public class TagGame extends JavaPlugin{
 		}
 
 		// Regist Listeners
-		//pm.registerEvents(serverListener, this);
+		pm.registerEvents(playerListener, this);
+		pm.registerEvents(inventoryListener, this);
 
 		// コマンド登録
 		registerCommands();
