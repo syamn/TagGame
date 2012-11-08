@@ -7,6 +7,7 @@ package syam.taggame.game;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +54,7 @@ public class Game {
 	private String gameID; // 一意なゲームID ログ用
 	// private Stage stage;
 
-	private int remainSec; // 残り時間
+	private int remainSec = 60 * 10; // 残り時間
 	private int timerThreadID = -1; // タイマータスクID
 	private int starttimeInSec = 10;
 	private int starttimerThreadID = -1;
@@ -147,7 +148,7 @@ public class Game {
 
 
 		// アナウンス
-		Actions.broadcastMessage(msgPrefix+"&2鬼ごっこ始まりました！");
+		Actions.broadcastMessage(msgPrefix+"&2鬼ごっこが始まりました！");
 		Actions.broadcastMessage(msgPrefix+"&f &a制限時間: &f"+Actions.getTimeString(remainSec)+"&f | &b鬼: &f"+taggers.size()+"&b人&f | &c参加者: &f"+runners.size()+"&c人");
 
 		// 開始
@@ -285,6 +286,43 @@ public class Game {
 		this.state = GameState.WAITING;
 	}
 
+	/* ***** 参加プレイヤー関係 ***** */
+	public boolean addPlayer(Player player, GameTeam team){
+		// チームの存在確認
+		if (player == null || team == null || !playersMap.containsKey(team)){
+			return false;
+		}
+		// 追加
+		playersMap.get(team).add(player.getName());
+		log("+ Player "+player.getName()+" joined "+team.name()+" Team!");
+		return true;
+	}
+	public GameTeam getPlayerTeam(Player player){
+		String name = player.getName();
+		for(Map.Entry<GameTeam, Set<String>> ent : playersMap.entrySet()){
+			// すべてのチームセットを回す
+			if(ent.getValue().contains(name)){
+				return ent.getKey();
+			}
+		}
+		// 一致なし nullを返す
+		return null;
+	}
+	public Set<String> getPlayersSet() {
+		Set<String> ret = new HashSet<String>();
+		for (Set<String> teamSet : playersMap.values()){
+			ret.addAll(teamSet);
+		}
+		return ret;
+	}
+	public boolean isJoined(String playerName) {
+		return getPlayersSet().contains(playerName);
+	}
+	public boolean isJoined(Player player) {
+		if (player == null) return false;
+		return this.isJoined(player.getName());
+	}
+
 	/* ***** 参加しているプレイヤーへのアクション関係 ***** */
 	/**
 	 * ゲーム参加者全員にメッセージを送る
@@ -364,12 +402,47 @@ public class Game {
 
 		return playersMap.get(team);
 	}
+	public Map<GameTeam, Set<String>> getPlayersMap(){
+		return playersMap;
+	}
 
 	/* ***** タイマー関係 ***** */
 	/**
+	 * 開始時のカウントダウンタイマータスクを開始する
+	 */
+	public void start_timer(final CommandSender sender){
+		// カウントダウン秒をリセット
+		starttimeInSec = plugin.getConfigs().getStartCountdownInSec();
+		if (starttimeInSec <= 0){
+			start(sender);
+			return;
+		}
+
+		Actions.broadcastMessage(msgPrefix+"&2まもなく鬼ごっこが始まります！");
+
+		// タイマータスク起動
+		//starttimerThreadID = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+		starttimerThreadID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			public void run(){
+				/* 1秒ごとに呼ばれる */
+
+				// 残り時間がゼロになった
+				if (starttimeInSec <= 0){
+					cancelTimerTask(); // タイマー停止
+					start(sender); // ゲーム開始
+					return;
+				}
+
+				message(msgPrefix+ "&aあと" +starttimeInSec+ "秒でこのゲームが始まります！");
+				starttimeInSec--;
+			}
+		}, 0L, 20L);
+	}
+
+	/**
 	 * メインのタイマータスクを開始する
 	 */
-	public void timer(){
+ 	public void timer(){
 		// タイマータスク
 		timerThreadID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimerTask(this.plugin, this), 0L, 20L);
 	}
@@ -399,6 +472,10 @@ public class Game {
 		remainSec--;
 	}
 
+	// 残り時間設定
+	public void setGameTime(int sec){
+		this.remainSec = sec;
+	}
 
 	/* ***** スポーン地点 ***** */
 	public void setSpawn(GameTeam team, Location loc){

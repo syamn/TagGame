@@ -20,6 +20,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.taggame.command.BaseCommand;
 import syam.taggame.command.HelpCommand;
+import syam.taggame.command.InfoCommand;
+import syam.taggame.command.JoinCommand;
+import syam.taggame.command.ReadyCommand;
+import syam.taggame.command.ReloadCommand;
+import syam.taggame.command.SetCommand;
+import syam.taggame.command.StartCommand;
+import syam.taggame.enums.GameResult;
+import syam.taggame.game.Game;
+import syam.taggame.manager.GameManager;
+import syam.taggame.util.Actions;
 import syam.taggame.util.Metrics;
 
 /**
@@ -76,13 +86,8 @@ public class TagGame extends JavaPlugin{
 		// コマンド登録
 		registerCommands();
 
-		// Building replaces
-		try {
-			buildReplaces();
-		}catch (Exception ex){
-			log.warning("Could not build replace strings! (Check plugin update!)");
-			ex.printStackTrace();
-		}
+		// TODO 鬼ごっこプロファイルの読み書きを作るまではここで初期化
+		new Game(this);
 
 		// メッセージ表示
 		PluginDescriptionFile pdfFile=this.getDescription();
@@ -96,15 +101,31 @@ public class TagGame extends JavaPlugin{
 	 */
 	@Override
 	public void onDisable(){
+		commands.clear();
+
+		// ゲームを終わらせる
+		Game game = GameManager.getGame();
+		if (game != null){
+			switch (game.getState()){
+				case RUNNING:
+					game.cancelTimerTask();
+					game.finish(GameResult.STOP, false, "Unloading TagGame Plugin");
+					game.log("Game finished because disabling plugin..");
+					break;
+				case READYING:
+					game.message(msgPrefix+ "&cあなたのエントリーはプラグインが無効になったため取り消されました");
+					Actions.broadcastMessage(msgPrefix+ "&cプラグインが無効にされたため、参加受付中のゲームは削除されました");
+					break;
+				default:
+					break;
+			}
+		}
+
+		getServer().getScheduler().cancelTasks(this);
+
 		// メッセージ表示
 		PluginDescriptionFile pdfFile=this.getDescription();
 		log.info("["+pdfFile.getName()+"] version "+pdfFile.getVersion()+" is disabled!");
-	}
-
-	public void buildReplaces(){
-		// mcVersion
-		final Matcher matcher = Pattern.compile("\\(MC: (.+)\\)").matcher(Bukkit.getVersion());
-		this.mcVersion = (matcher.find()) ? matcher.group(1) : "Unknown";
 	}
 
 	/**
@@ -114,11 +135,17 @@ public class TagGame extends JavaPlugin{
 		// Intro Commands
 		commands.add(new HelpCommand());
 
+		// User Commands
+		commands.add(new InfoCommand());
+		commands.add(new JoinCommand());
+
 		// Game Commands
+		commands.add(new ReadyCommand());
+		commands.add(new StartCommand());
+		commands.add(new SetCommand());
 
 		// Other Commands
-
-		// Admin Commands
+		commands.add(new ReloadCommand());
 	}
 
 	/**

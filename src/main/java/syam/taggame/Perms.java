@@ -12,11 +12,17 @@ import org.bukkit.permissions.Permissible;
  */
 public enum Perms {
 	/* 権限ノード */
-	// Intro Commands
+	// User Commands
+	INFO ("user.info"),
+	JOIN ("user.join"),
 
-	// Other Commands
+	// Game Commands
+	READY ("admin.ready"),
+	START ("admin.start"),
+	SET ("admin.set"),
 
 	// Admin Commands
+	RELOAD ("admin.reload"),
 
 	;
 

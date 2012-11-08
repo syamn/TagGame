@@ -45,6 +45,9 @@ public class ConfigurationManager {
 	// 設定項目
 	/* Basic Configs */
 
+	/* Games Configs */
+	private int startCountdownInSec = 10;
+
 	/* Logging Config */
 	private String detailDirectory = defaultDetailDirectory;
 
@@ -83,6 +86,9 @@ public class ConfigurationManager {
 
 		/* Basic Configs */
 
+		/* Games Configs */
+		startCountdownInSec = plugin.getConfig().getInt("StartCountdownInSec", 10);
+
 		/* Logging Config */
 		detailDirectory = plugin.getConfig().getString("DetailDirectory", defaultDetailDirectory);
 
@@ -96,6 +102,10 @@ public class ConfigurationManager {
 	// 設定 getter/setter ここから
 	/* Basic Configs */
 
+	/* Games Configs */
+	public int getStartCountdownInSec(){
+		return this.startCountdownInSec;
+	}
 	/* Logging Config */
 	public String getDetailDirectory(){
 		return this.detailDirectory;

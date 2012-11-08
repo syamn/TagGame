@@ -6,6 +6,12 @@
 #   Basic Config   #
 #==================#
 
+#==================#
+#   Games Config   #
+#==================#
+# Countdown time(sec) when starting the game
+StartCountdownInSec: 10
+
 #====================#
 #   Logging Config   #
 #====================#
