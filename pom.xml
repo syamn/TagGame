@@ -178,6 +178,21 @@
           <version>1.4.2-R0.3-SNAPSHOT</version>
           <scope>compile</scope>
       </dependency>
+      <!-- Vault Dependency -->
+      <dependency>
+          <groupId>net.milkbowl.vault</groupId>
+          <artifactId>Vault</artifactId>
+          <version>1.2.18-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
+      <!-- Dynmap Dependency -->
+      <dependency>
+          <groupId>org.dynmap</groupId>
+          <artifactId>dynmap-api</artifactId>
+          <version>0.70.2</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/dynmap-0.90.jar</systemPath>
+      </dependency>
   </dependencies>
 
   <!-- Profiles -->

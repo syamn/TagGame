@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -183,6 +185,49 @@ public class Actions {
 	public static String coloring(String string){
 		if (string == null) return null;
 		return string.replaceAll("&([0-9a-fA-Fk-oK-OrR])", "\u00A7$1");
+	}
+
+	/****************************************/
+	// 所持金操作系関数 - Vault
+	/****************************************/
+	/**
+	 * 指定したユーザーにお金を加える
+	 * @param name ユーザー名
+	 * @param amount 金額
+	 * @return 成功ならtrue、失敗ならfalse
+	 */
+	public static boolean addMoney(String name, double amount){
+		if (amount < 0) return false; // 負数は許容しない
+		EconomyResponse r = TagGame.getInstance().getEconomy().depositPlayer(name, amount);
+		if(r.transactionSuccess()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * 指定したユーザーからお金を引く
+	 * @param name ユーザー名
+	 * @param amount 金額
+	 * @return 成功ならtrue、失敗ならfalse
+	 */
+	public static boolean takeMoney(String name, double amount){
+		if (amount < 0) return false; // 負数は許容しない
+		EconomyResponse r = TagGame.getInstance().getEconomy().withdrawPlayer(name, amount);
+		if(r.transactionSuccess()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * 指定したユーザーがお金を持っているか
+	 * @param name ユーザー名
+	 * @param amount 金額
+	 * @return 持っていればtrue、無ければfalse
+	 */
+	public static boolean checkMoney(String name, double amount){
+		return (TagGame.getInstance().getEconomy().has(name, amount));
 	}
 
 	/****************************************/

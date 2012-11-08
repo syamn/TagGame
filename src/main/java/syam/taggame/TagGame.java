@@ -11,11 +11,16 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import syam.taggame.command.BaseCommand;
@@ -32,6 +37,7 @@ import syam.taggame.listener.InventoryListener;
 import syam.taggame.listener.PlayerListener;
 import syam.taggame.manager.GameManager;
 import syam.taggame.util.Actions;
+import syam.taggame.util.DynmapHandler;
 import syam.taggame.util.Metrics;
 
 /**
@@ -54,11 +60,14 @@ public class TagGame extends JavaPlugin{
 	// ** Private Classes **
 	private ConfigurationManager config;
 
-	// ** Replaces **
-	public String mcVersion = "";
-
 	// ** Instance **
 	private static TagGame instance;
+
+	// Hookup plugins
+	//public boolean usingDeathNotifier = false;
+	private static Vault vault = null;
+	private static Economy economy = null;
+	private DynmapHandler dynmap = null;
 
 	/**
 	 * プラグイン起動処理
@@ -77,6 +86,9 @@ public class TagGame extends JavaPlugin{
 			log.warning(logPrefix+"an error occured while trying to load the config file.");
 			ex.printStackTrace();
 		}
+
+		// Vault
+		setupVault();
 
 		// プラグインを無効にした場合進まないようにする
 		if (!pm.isPluginEnabled(this)){
@@ -154,6 +166,38 @@ public class TagGame extends JavaPlugin{
 	}
 
 	/**
+	 * Vaultプラグインにフック
+	 */
+	private void setupVault(){
+		Plugin plugin = this.getServer().getPluginManager().getPlugin("Vault");
+		if(plugin != null & plugin instanceof Vault) {
+			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+			// 経済概念のプラグインがロードされているかチェック
+			if(economyProvider==null){
+	        	log.warning(logPrefix+"Economy plugin not Fount. Disabling plugin.");
+		        getPluginLoader().disablePlugin(this);
+		        return;
+			}
+
+			try{
+				vault = (Vault) plugin;
+				economy = economyProvider.getProvider();
+			} // 例外チェック
+			catch(Exception e){
+				log.warning(logPrefix+"Could NOT be hook to Vault. Disabling plugin.");
+		        getPluginLoader().disablePlugin(this);
+		        return;
+			}
+			log.info(logPrefix+"Hooked to Vault!");
+		} else {
+			// Vaultが見つからなかった
+	        log.warning(logPrefix+"Vault was NOT found! Disabling plugin.");
+	        getPluginLoader().disablePlugin(this);
+	        return;
+	    }
+	}
+
+	/**
 	 * Metricsセットアップ
 	 */
 	private void setupMetrics(){
@@ -217,6 +261,31 @@ public class TagGame extends JavaPlugin{
 	public ConfigurationManager getConfigs() {
 		return config;
 	}
+
+	/**
+	 * Vaultを返す
+	 * @return Vault
+	 */
+	public Vault getVault(){
+		return this.vault;
+	}
+
+	/**
+	 * dynmapハンドラを返す
+	 * @return DynmapHandler
+	 */
+	public DynmapHandler getDynmap(){
+		return dynmap;
+	}
+
+	/**
+	 * Economyを返す
+	 * @return Economy
+	 */
+	public Economy getEconomy(){
+		return this.economy;
+	}
+
 
 	/**
 	 * インスタンスを返す
